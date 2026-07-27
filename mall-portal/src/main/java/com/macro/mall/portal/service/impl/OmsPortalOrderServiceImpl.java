@@ -250,6 +250,11 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     }
 
     @Override
+    public Map<String, Object> generatePay(OrderParam orderParam) {
+        return Map.of();
+    }
+
+    @Override
     public Integer paySuccess(Long orderId, Integer payType) {
         //修改订单支付状态
         OmsOrder order = new OmsOrder();

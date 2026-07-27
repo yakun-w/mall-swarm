@@ -45,6 +45,14 @@ public class OmsPortalOrderController {
         return CommonResult.success(result, "下单成功");
     }
 
+    @Operation(summary = "用户发起支付")
+    @RequestMapping(value = "/generatePay", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult generatePay(@RequestBody OrderParam orderParam) {
+        Map<String, Object> result = portalOrderService.generateOrder(orderParam);
+        return CommonResult.success(result, "下单成功");
+    }
+
     @Operation(summary = "用户支付成功的回调")
     @RequestMapping(value = "/paySuccess", method = RequestMethod.POST)
     @ResponseBody
