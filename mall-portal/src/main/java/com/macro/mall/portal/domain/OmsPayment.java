@@ -28,19 +28,21 @@ public class OmsPayment implements Serializable {
     @Schema(description = "关联订单号")
     private String orderNo;
 
+    @Schema(description = "支付方式：1->支付宝；2->微信")
+    private Integer payType;
+
     @Schema(description = "支付金额")
     private BigDecimal payAmount;
 
     @Schema(description = "支付状态：0->待支付；1->支付成功；2->支付失败；3->已关闭")
     private Integer payStatus;
 
+    @Schema(description = "第三方交易号（如支付宝 trade_no / 微信 transaction_id）")
+    private String thirdTradeNo;
+
     @Schema(description = "创建时间")
     private Date createTime;
 
     @Schema(description = "支付完成时间")
     private Date payTime;
-
-    第三方的交易号
-
-            支付方式
 }
