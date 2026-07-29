@@ -6,6 +6,8 @@ import com.github.pagehelper.PageHelper;
 import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.common.exception.Asserts;
 import com.macro.mall.common.service.RedisService;
+import com.macro.mall.portal.dao.PortalPayDao;
+import com.macro.mall.portal.util.PaymentNoUtil;
 import com.macro.mall.mapper.*;
 import com.macro.mall.model.*;
 import com.macro.mall.portal.component.CancelOrderSender;
@@ -52,6 +54,8 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     @Autowired
     private SmsCouponHistoryMapper couponHistoryMapper;
     @Autowired
+    private PayCallbackService payCallbackService;
+    @Autowired
     private RedisService redisService;
     @Value("${redis.key.orderId}")
     private String REDIS_KEY_ORDER_ID;
@@ -65,6 +69,8 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     private OmsOrderItemMapper orderItemMapper;
     @Autowired
     private CancelOrderSender cancelOrderSender;
+    @Autowired
+    private PortalPayDao portalPayDao;
 
     @Override
     public ConfirmOrderResult generateConfirmOrder(List<Long> cartIds) {
@@ -250,8 +256,33 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     }
 
     @Override
-    public Map<String, Object> generatePay(OrderParam orderParam) {
-        return Map.of();
+    public Map<String, Object> generatePay(String orderSn,Integer payType) {
+        //用户发起支付-->检验订单状态
+        OmsOrder omsOrder = orderMapper.selectByOrderSn(orderSn);
+        Integer status = omsOrder.getStatus();
+        if(status!=0){
+            throw new RuntimeException("订单已支付");
+        }
+//        检验订单状态-->查询订单金额
+        OmsPayment omsPayment = new OmsPayment();
+        //        查询订单金额-->生成支付参数
+        omsPayment.setPayAmount(omsOrder.getPayAmount());
+        omsPayment.setOrderNo(orderSn);
+        omsPayment.setPaymentNo(PaymentNoUtil.generatePaymentNo());
+        //todo 不确定怎么判断支付方式
+        omsPayment.setPayType(payType);
+        omsPayment.setPayStatus(0);
+
+        // 保存 Payment
+        portalPayDao.insertPayment(omsPayment);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("paymentNo", omsPayment.getPaymentNo());
+        result.put("orderNo", orderSn);
+        result.put("payAmount", omsOrder.getPayAmount());
+        result.put("payType", omsPayment.getPayType());
+
+        return result;
     }
 
     @Override

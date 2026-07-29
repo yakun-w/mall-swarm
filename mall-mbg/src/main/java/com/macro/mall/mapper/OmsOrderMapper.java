@@ -20,6 +20,8 @@ public interface OmsOrderMapper {
 
     OmsOrder selectByPrimaryKey(Long id);
 
+    OmsOrder selectByOrderSn(String orderSn);
+
     int updateByExampleSelective(@Param("row") OmsOrder row, @Param("example") OmsOrderExample example);
 
     int updateByExample(@Param("row") OmsOrder row, @Param("example") OmsOrderExample example);

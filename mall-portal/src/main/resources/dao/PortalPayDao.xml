@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.macro.mall.portal.dao.PortalPayDao">
+
+    <!-- 通用查询映射结果（根据之前的实体类与数据库字段对应） -->
+    <resultMap id="BaseResultMap" type="com.macro.mall.portal.domain.OmsPayment">
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="payment_no" property="paymentNo" jdbcType="VARCHAR" />
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+        <result column="pay_type" property="payType" jdbcType="INTEGER" />
+        <result column="pay_amount" property="payAmount" jdbcType="DECIMAL" />
+        <result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+        <result column="third_trade_no" property="thirdTradeNo" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, payment_no, order_no, pay_type, pay_amount, pay_status, third_trade_no, create_time, pay_time
+    </sql>
+
+    <!-- 1. 插入支付单数据 -->
+    <insert id="insertPayment" parameterType="com.macro.mall.portal.domain.OmsPayment" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_payment (
+            payment_no,
+            order_no,
+            pay_type,
+            pay_amount,
+            pay_status,
+            third_trade_no,
+            create_time,
+            pay_time
+        )
+        values (
+                   #{paymentNo,jdbcType=VARCHAR},
+                   #{orderNo,jdbcType=VARCHAR},
+                   #{payType,jdbcType=INTEGER},
+                   #{payAmount,jdbcType=DECIMAL},
+                   #{payStatus,jdbcType=INTEGER},
+                   #{thirdTradeNo,jdbcType=VARCHAR},
+                   #{createTime,jdbcType=TIMESTAMP},
+                   #{payTime,jdbcType=TIMESTAMP}
+               )
+    </insert>
+
+    <!-- 2. 根据 paymentNo 查询支付单 -->
+    <select id="selectByPaymentNo" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from oms_payment
+        where payment_no = #{paymentNo,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

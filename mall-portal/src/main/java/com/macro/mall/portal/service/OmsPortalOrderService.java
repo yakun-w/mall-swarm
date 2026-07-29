@@ -29,7 +29,7 @@ public interface OmsPortalOrderService {
      * 用户发起支付
      */
     @Transactional
-    Map<String, Object> generatePay(OrderParam orderParam);
+    Map<String, Object> generatePay(String orderSn,Integer payType);
 
     /**
      * 支付成功后的回调
