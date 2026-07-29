@@ -54,8 +54,6 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     @Autowired
     private SmsCouponHistoryMapper couponHistoryMapper;
     @Autowired
-    private PayCallbackService payCallbackService;
-    @Autowired
     private RedisService redisService;
     @Value("${redis.key.orderId}")
     private String REDIS_KEY_ORDER_ID;
@@ -71,6 +69,8 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     private CancelOrderSender cancelOrderSender;
     @Autowired
     private PortalPayDao portalPayDao;
+    @Autowired
+    private OmsPayService omsPayService;
 
     @Override
     public ConfirmOrderResult generateConfirmOrder(List<Long> cartIds) {
@@ -256,7 +256,7 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     }
 
     @Override
-    public Map<String, Object> generatePay(String orderSn,Integer payType) {
+    public PayResponse generatePay(String orderSn,Integer payType) {
         //用户发起支付-->检验订单状态
         OmsOrder omsOrder = orderMapper.selectByOrderSn(orderSn);
         Integer status = omsOrder.getStatus();
@@ -269,20 +269,13 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         omsPayment.setPayAmount(omsOrder.getPayAmount());
         omsPayment.setOrderNo(orderSn);
         omsPayment.setPaymentNo(PaymentNoUtil.generatePaymentNo());
-        //todo 不确定怎么判断支付方式
         omsPayment.setPayType(payType);
         omsPayment.setPayStatus(0);
 
         // 保存 Payment
         portalPayDao.insertPayment(omsPayment);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("paymentNo", omsPayment.getPaymentNo());
-        result.put("orderNo", orderSn);
-        result.put("payAmount", omsOrder.getPayAmount());
-        result.put("payType", omsPayment.getPayType());
-
-        return result;
+        return omsPayService.createPay(omsPayment);
     }
 
     @Override

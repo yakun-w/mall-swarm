@@ -5,6 +5,7 @@ import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.portal.domain.ConfirmOrderResult;
 import com.macro.mall.portal.domain.OmsOrderDetail;
 import com.macro.mall.portal.domain.OrderParam;
+import com.macro.mall.portal.domain.PayResponse;
 import com.macro.mall.portal.service.OmsPortalOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,9 +49,8 @@ public class OmsPortalOrderController {
     @Operation(summary = "用户发起支付")
     @RequestMapping(value = "/generatePay", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult generatePay(@RequestBody String orderSn,Integer payType) {
-        Map<String, Object> result = portalOrderService.generatePay(orderSn,payType);
-        return CommonResult.success(result, "下单成功");
+    public PayResponse generatePay(@RequestBody String orderSn, Integer payType) {
+        return portalOrderService.generatePay(orderSn,payType);
     }
 
     @Operation(summary = "用户支付成功的回调")

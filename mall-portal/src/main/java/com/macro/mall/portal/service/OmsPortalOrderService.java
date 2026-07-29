@@ -4,6 +4,7 @@ import com.macro.mall.common.api.CommonPage;
 import com.macro.mall.portal.domain.ConfirmOrderResult;
 import com.macro.mall.portal.domain.OmsOrderDetail;
 import com.macro.mall.portal.domain.OrderParam;
+import com.macro.mall.portal.domain.PayResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public interface OmsPortalOrderService {
      * 用户发起支付
      */
     @Transactional
-    Map<String, Object> generatePay(String orderSn,Integer payType);
+    PayResponse generatePay(String orderSn, Integer payType);
 
     /**
      * 支付成功后的回调
