@@ -272,7 +272,11 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         omsPayment.setPayType(payType);
         omsPayment.setPayStatus(0);
 
+        OmsPayment payment = portalPayDao.selectByPaymentNo(omsPayment.getPaymentNo());
         // 保存 Payment
+        if(payment != null && payment.getPayStatus()==0){
+            return omsPayService.createPay(omsPayment);
+        }
         portalPayDao.insertPayment(omsPayment);
 
         return omsPayService.createPay(omsPayment);
