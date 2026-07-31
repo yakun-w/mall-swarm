@@ -23,4 +23,12 @@ public interface PortalPayDao {
      * @return 支付单实体
      */
     OmsPayment selectByPaymentNo(@Param("paymentNo") String paymentNo);
+
+    /**
+     * 根据系统内部支付单号（paymentNo）更新第三方流水号和支付状态
+     *
+     * @param payment 包含 paymentNo、thirdTradeNo、payStatus/payResult 的对象
+     * @return 影响的行数
+     */
+    int updatePayment(OmsPayment payment);
 }

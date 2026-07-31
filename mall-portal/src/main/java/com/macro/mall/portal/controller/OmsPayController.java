@@ -1,11 +1,9 @@
 package com.macro.mall.portal.controller;
 
-import com.macro.mall.common.api.CommonResult;
+import com.macro.mall.portal.domain.CallBackParam;
 import com.macro.mall.portal.domain.OmsPayment;
-import com.macro.mall.portal.domain.OrderParam;
 import com.macro.mall.portal.domain.PayResponse;
 import com.macro.mall.portal.service.OmsPayService;
-import com.macro.mall.portal.service.PayCallbackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +18,19 @@ public class OmsPayController {
 
     @Autowired
     private OmsPayService omsPayService;
-    //发起支付
+
     @Operation(summary = "发起支付")
     @RequestMapping(value = "/generatePay", method = RequestMethod.POST)
     @ResponseBody
     public PayResponse generatePay(@RequestBody OmsPayment payment) {
         PayResponse payResponse = omsPayService.createPay(payment);
         return payResponse;
+    }
+    @Operation(summary = "支付回调")
+    @RequestMapping(value = "/callBackPay", method = RequestMethod.POST)
+    @ResponseBody
+    public OmsPayment callBackPay(@RequestBody CallBackParam callBackParam) {
+        OmsPayment omsPayment = omsPayService.payCallback(callBackParam);
+        return omsPayment;
     }
 }

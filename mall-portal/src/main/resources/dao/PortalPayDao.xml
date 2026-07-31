@@ -52,4 +52,12 @@
         where payment_no = #{paymentNo,jdbcType=VARCHAR}
     </select>
 
+    <update id="updatePayment" parameterType="com.macro.mall.portal.domain.OmsPayment">
+        update oms_payment
+        set
+            third_trade_no = #{thirdTradeNo,jdbcType=VARCHAR},
+            pay_status = #{payStatus,jdbcType=INTEGER}
+        where thirdTrade_no = #{thirdTradeNo,jdbcType=VARCHAR}
+    </update>
+
 </mapper>
