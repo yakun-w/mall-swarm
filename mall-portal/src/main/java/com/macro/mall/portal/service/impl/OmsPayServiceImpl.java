@@ -7,7 +7,9 @@ import com.macro.mall.portal.dao.PortalPayDao;
 import com.macro.mall.portal.domain.CallBackParam;
 import com.macro.mall.portal.domain.OmsPayment;
 import com.macro.mall.portal.domain.PayResponse;
+import com.macro.mall.portal.event.PaymentSuccessEvent;
 import com.macro.mall.portal.service.OmsPayService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class OmsPayServiceImpl implements OmsPayService {
 
     @Autowired
     private PortalPayDao payDao;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     public PayResponse createPay(OmsPayment payment) {
@@ -58,6 +63,19 @@ public class OmsPayServiceImpl implements OmsPayService {
         payment.setPayTime(callBackParam.getPayTime());
         payment.setThirdTradeNo(callBackParam.getThirdTradeNo());
         payDao.updatePayment(payment);
+
+        // 3. 发送 MQ 消息（通知订单系统）
+        PaymentSuccessEvent event = new PaymentSuccessEvent(
+                payment.getOrderNo(),
+                payment.getPaymentNo(),
+                callBackParam.getThirdTradeNo()
+        );
+
+        rabbitTemplate.convertAndSend(
+                "payment.exchange",
+                "payment.success",
+                event
+        );
         return payment;
     }
 }
