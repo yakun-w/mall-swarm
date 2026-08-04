@@ -263,9 +263,9 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         if(status!=0){
             throw new RuntimeException("订单已支付");
         }
-//        检验订单状态-->查询订单金额
+        //检验订单状态-->查询订单金额
         OmsPayment omsPayment = new OmsPayment();
-        //        查询订单金额-->生成支付参数
+        //查询订单金额-->生成支付参数
         omsPayment.setPayAmount(omsOrder.getPayAmount());
         omsPayment.setOrderNo(orderSn);
         omsPayment.setPaymentNo(PaymentNoUtil.generatePaymentNo());
@@ -283,16 +283,16 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     }
 
     @Override
-    public Integer paySuccess(Long orderId, Integer payType) {
+    public Integer paySuccess(String orderSn, Integer payType) {
         //修改订单支付状态
         OmsOrder order = new OmsOrder();
-        order.setId(orderId);
+        order.setOrderSn(orderSn);
         order.setStatus(1);
         order.setPaymentTime(new Date());
         order.setPayType(payType);
         orderMapper.updateByPrimaryKeySelective(order);
         //恢复所有下单商品的锁定库存，扣减真实库存
-        OmsOrderDetail orderDetail = portalOrderDao.getDetail(orderId);
+        OmsOrderDetail orderDetail = portalOrderDao.getDetail(1L);
         int count = portalOrderDao.updateSkuStock(orderDetail.getOrderItemList());
         return count;
     }
@@ -462,7 +462,7 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         List<OmsOrder> orderList = orderMapper.selectByExample(example);
         if(CollUtil.isNotEmpty(orderList)){
             OmsOrder order = orderList.get(0);
-            paySuccess(order.getId(),payType);
+            paySuccess(order.getOrderSn(),payType);
         }
     }
 

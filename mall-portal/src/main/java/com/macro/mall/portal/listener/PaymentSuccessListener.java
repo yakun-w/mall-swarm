@@ -20,6 +20,7 @@ public class PaymentSuccessListener {
     @RabbitListener(queues = "payment.success.queue")
     public void handlePaymentSuccess(PaymentSuccessEvent event) {
         // 调用 order 包自己的 service 修改订单状态、处理后续逻辑
-        orderService.paySuccess(1L,2);
+        String i = "as";
+        orderService.paySuccess(i,2);
     }
 }
